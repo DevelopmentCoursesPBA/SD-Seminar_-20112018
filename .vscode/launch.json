@@ -10,7 +10,7 @@
             "authentication": "Windows",
             "breakOnError": true,
             "port": 7049,
-            "schemaUpdateMode": "Recreate"
+            "schemaUpdateMode": "Synchronize"
         }
     ]
 }

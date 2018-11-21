@@ -1,31 +1,35 @@
-codeunit 50149 "CSD Install Seminar"
+codeunit 50149 InstallSeminar
 {
     Subtype = Install;
 
-
     trigger OnInstallAppPerCompany();
     begin
-        if SeminarSetup.Get() then
+      if SetupExists then
             exit;
         InitSetup;
         CreateSeminar;
-        CreateResources;
+        CreateResources;        
     end;
 
     local procedure InitSetup();
     var
         NoSerie: Record "No. Series";
         NoSerieLine: Record "No. Series Line";
+        SeminarSetup: Record "CSD Seminar Setup";
         SourceCodeSetup: Record "Source Code Setup";
         SourceCode: Record "Source Code";
     begin
+        SetupExists := SeminarSetup.get;
+        if SetupExists then
+            exit;
+
         SeminarSetup.init;
         if SeminarSetup.Insert then;
 
         NoSerie.Code := 'SEM';
         NoSerie.Description := 'Seminars';
-        NoSerie."Default Nos." := true;
-        NoSerie."Manual Nos." := true;
+        NoSerie."Default Nos.":=true;
+        NoSerie."Manual Nos.":=true;
 
         if NoSerie.Insert then;
 
@@ -36,8 +40,8 @@ codeunit 50149 "CSD Install Seminar"
 
         NoSerie.Code := 'SEMREG';
         NoSerie.Description := 'Seminar Registrations';
-        NoSerie."Default Nos." := true;
-        NoSerie."Manual Nos." := false;
+        NoSerie."Default Nos.":=true;
+        NoSerie."Manual Nos.":=false;
         if NoSerie.Insert then;
 
         NoSerieLine."Series Code" := NoSerie.Code;
@@ -47,8 +51,8 @@ codeunit 50149 "CSD Install Seminar"
 
         NoSerie.Code := 'SEMREGPOST';
         NoSerie.Description := 'Posted Seminar Registrations';
-        NoSerie."Default Nos." := true;
-        NoSerie."Manual Nos." := true;
+        NoSerie."Default Nos.":=true;
+        NoSerie."Manual Nos.":=true;
         if NoSerie.Insert then;
 
         NoSerieLine."Series Code" := NoSerie.Code;
@@ -61,46 +65,40 @@ codeunit 50149 "CSD Install Seminar"
         SourceCode.Code := 'SEMINAR';
         if SourceCode.Insert then;
         SourceCodeSetup.get;
-        //SourceCodeSetup."CSD Seminar" := 'SEMINAR';
+        SourceCodeSetup."CSD Seminar" := 'SEMINAR';
         SourceCodeSetup.modify;
-    end;
-
+     end;
     local procedure CreateSeminar();
     var
         Seminar: Record "CSD Seminar";
-        Course: Record Course;
     begin
-        if Course.findset then
-            repeat
-                Seminar."No." := Course.Code;
-                Seminar.Validate(Name, Course.Description);
-                Seminar.Validate("Gen. Prod. Posting Group", 'MISC');
-                Seminar."Maximum Participants" := 12;
-                Seminar."Minimum Participants" := 4;
-                Seminar."Seminar Duration" := course.Duration;
-                Seminar."Seminar Price" := course.Price;
-                if Seminar.insert then;
-            until course.Next = 0;
+        Seminar."No.":='SOLDEV';
+        Seminar.Validate(Name,'Solution Development');
+        Seminar.Validate("Gen. Prod. Posting Group",'MISC');
+        Seminar."Maximum Participants":=12;
+        Seminar."Minimum Participants":=4;
+        Seminar."Seminar Duration":=5;
+        Seminar."Seminar Price":=1000;
+        if Seminar.insert then;
     end;
-
     local procedure CreateResources();
     var
         Resource: Record Resource;
     begin
         Resource.init;
-        Resource."No." := 'INSTR';
-        Resource.Name := 'Mr. Instructor';
-        Resource.validate("Gen. Prod. Posting Group", 'MISC');
-        Resource."Direct Unit Cost" := 100;
-        Resource."CSD Quantity Per Day" := 8;
-        Resource.Type := Resource.Type::Person;
+        Resource."No.":='INSTR';
+        Resource.Name:='Mr. Instructor';
+        Resource.validate("Gen. Prod. Posting Group",'MISC');
+        Resource."Direct Unit Cost":=100;
+        Resource."CSD Quantity Per Day":=8;
+        Resource.Type:=Resource.Type::Person;
         if Resource.Insert then;
-        Resource."No." := 'ROOM 01';
-        Resource.Name := 'Room 01';
-        Resource.Type := Resource.Type::Machine;
+        Resource."No.":='ROOM 01';
+        Resource.Name:='Room 01';
+        Resource.Type:=Resource.Type::Machine;
         if Resource.Insert then;
     end;
 
     var
-        SeminarSetup: Record "CSD Seminar Setup";
+        SetupExists: Boolean;
 }
