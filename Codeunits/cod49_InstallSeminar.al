@@ -4,7 +4,6 @@ codeunit 50149 InstallSeminar
 
     trigger OnInstallAppPerCompany();
     begin
-        exit;
         if SetupExists then
             exit;
         InitSetup;

@@ -6,7 +6,7 @@
             "request": "launch",
             "name": "Your own server",
             "server": "http://localhost",
-            "serverInstance": "BC130",
+            "serverInstance": "DynamicsNAV130W1",
             "authentication": "Windows",
             "breakOnError": true,
             "port": 7049,
